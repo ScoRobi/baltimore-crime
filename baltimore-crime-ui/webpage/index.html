@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="styles/baltimoreCrimeStyles.css" />
+<link rel="stylesheet" href="styles/jquery-ui.css">
+<body>
+
+	<span>
+		<h1>Baltimore Victim Based Crime Map</h1>
+		<span id="instructions">
+			Mouseover map for details. Click and drag histograms to crossfilter.
+		</span>
+	</span>
+
+	<div id="charts">
+		<div id="map" class="display"></div>
+
+		<!--TODO: Add Pie chart of assault weapons for given scope-->
+	</div>
+
+	<div>
+		<h1>Filters</h1>
+		<i>(Note: Text boxes accept comma separated parameters. No entry result in no filter for given parameter.)</i>
+
+		<p>
+			<button class="ui-button ui-widget ui-corner-all" id="apply-button">Apply Filters</button>
+			<button class="ui-button ui-widget ui-corner-all" id="clear-button">Clear Filters</button>
+		</p>
+
+		<p>
+			<label for="date-range">Date Range:</label>
+			<input type="text" id="date-range" readonly style="border:0; color:#f6931f; font-weight:bold;">
+		</p>
+		<div id="date-slider-range"></div>
+
+		<p>
+			<label for="time-start-spinner">Time Start:</label>
+			<input id="time-start-spinner" name="spinner" value="12:00 AM">
+
+			<label for="time-end-spinner">Time End:</label>
+			<input id="time-end-spinner" name="spinner" value="11:59 PM">
+		</p>
+
+
+		<div class="widget">
+			<p>
+			<fieldset>
+				<legend>District: </legend>
+				<label for="checkbox-central">CENTRAL</label>
+				<input type="checkbox" name="checkbox-central" id="checkbox-central" checked="true">
+				<label for="checkbox-eastern">EASTERN</label>
+				<input type="checkbox" name="checkbox-eastern" id="checkbox-eastern" checked="true">
+				<label for="checkbox-northeastern">NORTHEASTERN</label>
+				<input type="checkbox" name="checkbox-northeastern" id="checkbox-northeastern" checked="true">
+				<label for="checkbox-northern">NORTHERN</label>
+				<input type="checkbox" name="checkbox-northern" id="checkbox-northern" checked="true">
+				<label for="checkbox-northwestern">NORTHWESTERN</label>
+				<input type="checkbox" name="checkbox-northwestern" id="checkbox-northwestern" checked="true">
+				<label for="checkbox-southeastern">SOUTHEASTERN</label>
+				<input type="checkbox" name="checkbox-southeastern" id="checkbox-southeastern" checked="true">
+				<label for="checkbox-southern">SOUTHERN</label>
+				<input type="checkbox" name="checkbox-southern" id="checkbox-southern" checked="true">
+				<label for="checkbox-southwestern">SOUTHWESTERN</label>
+				<input type="checkbox" name="checkbox-southwestern" id="checkbox-southwestern" checked="true">
+				<label for="checkbox-western">WESTERN</label>
+				<input type="checkbox" name="checkbox-western" id="checkbox-western" checked="true">
+			</fieldset>
+			</p>
+
+			<p>
+			<fieldset>
+				<legend>Weapons: </legend>
+				<label for="checkbox-hands">HANDS</label>
+				<input type="checkbox" name="checkbox-hands" id="checkbox-hands" checked="true">
+				<label for="checkbox-knife">KNIFE</label>
+				<input type="checkbox" name="checkbox-knife" id="checkbox-knife" checked="true">
+				<label for="checkbox-firearm">FIREARM</label>
+				<input type="checkbox" name="checkbox-firearm" id="checkbox-firearm" checked="true">
+				<label for="checkbox-other">OTHER</label>
+				<input type="checkbox" name="checkbox-other" id="checkbox-other" checked="true">
+				<label for="checkbox-other">UNKNOWN</label>
+				<input type="checkbox" name="checkbox-other" id="checkbox-unknown" checked="true">
+			</fieldset>
+			</p>
+		</div>
+
+		<p>
+			<label for="lat-range">Latitude Range:</label>
+			<input type="text" id="lat-range" readonly style="border:0; color:#f6931f; font-weight:bold;">
+		</p>
+		<div id="lat-slider-range"></div>
+
+		<p>
+			<label for="lon-range">Longitude Range:</label>
+			<input type="text" id="lon-range" readonly style="border:0; color:#f6931f; font-weight:bold;">
+		</p>
+		<div id="lon-slider-range"></div>
+
+		<p>
+			<label for="locations">Locations: </label><input type='textbox' id="locations">
+			<label for="posts">Posts: </label><input type='textbox' id="posts">
+			<label for="neighborhoods">Neighborhoods: </label><input type='textbox' id="neighborhoods">
+			<label for="crimecodes">CrimeCodes: </label><input type='textbox' id="crimecodes">
+		</p>
+
+	</div>
+
+
+	<br>
+	<br>
+	<div id="about">
+		Data collected from <a class= "blacklink" href="https://data.baltimorecity.gov/Public-Safety/BPD-Part-1-Victim-Based-Crime-Data/wsfq-mvij">Baltimore City</a> on June 28, 2016.
+	</div>
+	<div id="github">
+		 TODO: <a class= "blacklink" href="https://github.com/todo">github</a>
+	</div>
+
+</body>
+
+<script src="lib/d3.js"></script>
+<script src="lib/topojson.js"></script>
+<script src="lib/queue.js"></script>
+<script src="lib/jquery-3.0.0.js"></script>
+<script src="lib/jquery-3.0.0.min.js"></script>
+<script src="baltimoreCrime.js"></script>
+<script src="slider-range.js"></script>
+<script src="spinner.js"></script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+<script src="lib/jquery.mousewheel.js"></script>
+<script src="lib/globalize.js"></script>
+
+</html>
