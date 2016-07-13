@@ -402,7 +402,7 @@ function buildFilterForDistricts() {
 	}
 
 	// Return no filter if all selected
-	if (fdistricts.length == 8) {
+	if (fdistricts.length == 9) {
 		return null;
 	}
 
