@@ -16,7 +16,7 @@
                 <property name="driver" value="com.mysql.jdbc.Driver"/>
                 <property name="url" value="jdbc:mysql://localhost:3306/"/>
                 <property name="username" value="root"/>
-                <property name="password" value="howidethro"/>
+                <property name="password" value=""/>
             </dataSource>
         </environment>
     </environments>

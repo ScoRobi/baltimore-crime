@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.baltimorecrime.core.service.MapServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2016-07-09T20:26:52" hostname="us158998" time="0.168">
-  <properties/>
-  <testcase name="shouldReadFilteredData" classname="com.baltimorecrime.core.service.MapServiceTest" time="0.025"/>
-  <testcase name="shouldFailReadFilteredDataWithNullFilter" classname="com.baltimorecrime.core.service.MapServiceTest" time="0.142"/>
-  <testcase name="shouldReadUnfilteredData" classname="com.baltimorecrime.core.service.MapServiceTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
