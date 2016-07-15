@@ -1,4 +1,4 @@
-DROP TABLE baltimore_crime.crime;
+DROP TABLE IF EXISTS baltimore_crime.crime;
 
 CREATE TABLE baltimore_crime.crime (
 	sid BIGINT,

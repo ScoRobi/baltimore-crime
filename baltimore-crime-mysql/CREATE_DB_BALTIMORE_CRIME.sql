@@ -1,1 +1,1 @@
-CREATE DATABASE baltimore_crime;
+CREATE DATABASE IF NOT EXISTS baltimore_crime;
