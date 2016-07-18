@@ -2,14 +2,20 @@ package com.baltimorecrime.core.utils;
 
 import com.baltimorecrime.core.domain.District;
 import com.baltimorecrime.core.domain.FilterAttributes;
+import com.baltimorecrime.core.domain.TimeRange;
+import com.baltimorecrime.core.domain.Weapon;
 import com.mysql.jdbc.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -92,11 +98,8 @@ public class FilterAttributesUtil {
       if(!StringUtils.isNullOrEmpty(filterEndLongitude)) {
         filterAttributes.setEndLongitude(Double.valueOf(filterEndLongitude));
       }
-      if(!StringUtils.isNullOrEmpty(filterStartTime)) {
-        filterAttributes.setStartTime(Time.valueOf(filterStartTime));
-      }
-      if(!StringUtils.isNullOrEmpty(filterEndTime)) {
-        filterAttributes.setEndTime(Time.valueOf(filterEndTime));
+      if(!StringUtils.isNullOrEmpty(filterStartTime) && !StringUtils.isNullOrEmpty(filterEndTime)) {
+        filterAttributes.setTimeRanges(buildTimeRange(Time.valueOf(filterStartTime), Time.valueOf(filterEndTime)));
       }
       return filterAttributes;
     } catch (Exception e) {
@@ -112,8 +115,11 @@ public class FilterAttributesUtil {
   public static void validateFilterAttributes(FilterAttributes filterAttributes) {
 
     if (Objects.isNull(filterAttributes)) {
-      throw new NotFoundException(); //TODO: Improve exception handling
+      throw new NotFoundException();
     }
+
+    // Map to keep track of any invalid arguments
+    Map<String, List> invalidArguments = new HashMap<>();
 
     // Validate provided Districts
     if (!CollectionUtils.isEmpty(filterAttributes.getDistricts())) {
@@ -123,11 +129,59 @@ public class FilterAttributesUtil {
           .collect(Collectors.toList());
 
       if (!CollectionUtils.isEmpty(invalidDistricts)) {
-        //TODO: throw error with each invalid district
+        invalidArguments.put("Districts", invalidDistricts);
       }
     }
 
-    //TODO: Validate provided Date and Time
+    // Validate provided Weapons
+    if (!CollectionUtils.isEmpty(filterAttributes.getWeapons())) {
+      List validWeapons = Arrays.asList(Weapon.values());
+      List invalidWeapons = filterAttributes.getWeapons().stream()
+          .filter(weapon -> validWeapons.contains(weapon))
+          .collect(Collectors.toList());
+
+      if (!CollectionUtils.isEmpty(invalidWeapons)) {
+        invalidArguments.put("Weapons", invalidWeapons);
+      }
+    }
+
+    //TODO: Add remaining filtering fields
+
+    // Throw detailed error message if errors found
+    if (!invalidArguments.isEmpty()) {
+      String errorMessage = "The following arguments were invalid:\n";
+      errorMessage += invalidArguments.keySet().stream().map(key ->
+        new String(key + ":[" + invalidArguments.get(key) + "]\n")
+      ).collect(Collectors.toList()).toString();
+
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
+  public static List<TimeRange> buildTimeRange(Time startTime, Time endTime) {
+
+    List<TimeRange> timeRanges = new ArrayList<>();
+
+    // Handle the case where the start time is logically after the end time
+    if (startTime.toLocalTime().toSecondOfDay() > endTime.toLocalTime().toSecondOfDay()) {
+      TimeRange startTimeRange = new TimeRange();
+      startTimeRange.setStartTime(startTime);
+      startTimeRange.setEndTime(Time.valueOf("23:59:59"));
+
+      TimeRange endTimeRange = new TimeRange();
+      endTimeRange.setStartTime(Time.valueOf("00:00:00"));
+      endTimeRange.setEndTime(endTime);
+
+      timeRanges.add(startTimeRange);
+      timeRanges.add(endTimeRange);
+    } else {
+      TimeRange timeRange = new TimeRange();
+      timeRange.setStartTime(startTime);
+      timeRange.setEndTime(endTime);
+      timeRanges.add(timeRange);
+    }
+
+    return timeRanges;
   }
 
 }

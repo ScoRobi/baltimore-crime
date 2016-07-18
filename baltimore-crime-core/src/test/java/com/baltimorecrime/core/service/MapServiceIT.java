@@ -4,6 +4,7 @@ import com.baltimorecrime.core.BaltimoreCrimeCoreApplication;
 import com.baltimorecrime.core.domain.CrimePoint;
 import com.baltimorecrime.core.domain.District;
 import com.baltimorecrime.core.domain.FilterAttributes;
+import com.baltimorecrime.core.domain.TimeRange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,17 +57,20 @@ public class MapServiceIT {
 
   @Test
   public void testReadFilteredDataByCrimeTime() {
+    TimeRange timeRange = new TimeRange();
+    timeRange.setStartTime(Time.valueOf("00:00:00"));
+    timeRange.setEndTime(Time.valueOf("06:00:00"));
+
     FilterAttributes filterAttributes = new FilterAttributes();
-    filterAttributes.setStartTime(Time.valueOf("00:00:00"));
-    filterAttributes.setEndTime(Time.valueOf("06:00:00"));
+    filterAttributes.setTimeRanges(Arrays.asList(timeRange));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
 
     assertNotNull(crimePoints);
     assertTrue(crimePoints.size() > 0);
 
     crimePoints.stream().forEach(crimePoint -> {
-      assertTrue(filterAttributes.getStartTime().compareTo(crimePoint.getCrimeTime()) <= 0);
-      assertTrue(filterAttributes.getEndTime().compareTo(crimePoint.getCrimeTime()) >= 0);
+      assertTrue(filterAttributes.getTimeRanges().get(0).getStartTime().compareTo(crimePoint.getCrimeTime()) <= 0);
+      assertTrue(filterAttributes.getTimeRanges().get(0).getEndTime().compareTo(crimePoint.getCrimeTime()) >= 0);
     });
   }
 
@@ -184,11 +188,14 @@ public class MapServiceIT {
 
   @Test
   public void testReadFilteredDataByMultipleFilters() {
+    TimeRange timeRange = new TimeRange();
+    timeRange.setStartTime(Time.valueOf("12:00:00"));
+    timeRange.setEndTime(Time.valueOf("23:59:59"));
+
     FilterAttributes filterAttributes = new FilterAttributes();
+    filterAttributes.setTimeRanges(Arrays.asList(timeRange));
     filterAttributes.setStartDate(Date.valueOf("2016-06-05"));
     filterAttributes.setEndDate(Date.valueOf("2016-06-18"));
-    filterAttributes.setStartTime(Time.valueOf("12:00:00"));
-    filterAttributes.setEndTime(Time.valueOf("23:59:59"));
     filterAttributes.setWeapons(Arrays.asList("FIREARM", "KNIFE"));
     filterAttributes.setNeighborhoods(Arrays.asList("Canton", "Fells Point"));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
@@ -199,8 +206,8 @@ public class MapServiceIT {
     crimePoints.stream().forEach(crimePoint -> {
       assertTrue(filterAttributes.getStartDate().compareTo(crimePoint.getCrimeDate()) <= 0);
       assertTrue(filterAttributes.getEndDate().compareTo(crimePoint.getCrimeDate()) >= 0);
-      assertTrue(filterAttributes.getStartTime().compareTo(crimePoint.getCrimeTime()) <= 0);
-      assertTrue(filterAttributes.getEndTime().compareTo(crimePoint.getCrimeTime()) >= 0);
+      assertTrue(filterAttributes.getTimeRanges().get(0).getStartTime().compareTo(crimePoint.getCrimeTime()) <= 0);
+      assertTrue(filterAttributes.getTimeRanges().get(0).getEndTime().compareTo(crimePoint.getCrimeTime()) >= 0);
       assertTrue(filterAttributes.getWeapons().contains(crimePoint.getWeapon()));
       assertTrue(filterAttributes.getNeighborhoods().contains(crimePoint.getNeighborhood()));
     });

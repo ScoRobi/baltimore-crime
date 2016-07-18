@@ -16,8 +16,7 @@ public class FilterAttributes {
   Date startDate;
   Date endDate;
 
-  Time startTime;
-  Time endTime;
+  List<TimeRange> timeRanges;
 
   List<String> crimeCodes;
   List<String> locations;

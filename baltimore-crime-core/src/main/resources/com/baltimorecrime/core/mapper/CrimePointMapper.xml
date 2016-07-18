@@ -28,14 +28,17 @@
 
     <select id="selectWithFilter" parameterType="com.baltimorecrime.core.domain.FilterAttributes" resultMap="result">
         SELECT * FROM baltimore_crime.crime
-        WHERE id is not null
+        WHERE id IS NOT NULL
         <if test="filterAttributes.startDate != null and filterAttributes.endDate != null">
             AND crimeDate &gt;= #{filterAttributes.startDate}
             AND crimeDate &lt;= #{filterAttributes.endDate}
         </if>
-        <if test="filterAttributes.startTime != null and filterAttributes.endTime != null">
-            AND crimeTime &gt;= #{filterAttributes.startTime}
-            AND crimeTime &lt;= #{filterAttributes.endTime}
+        <if test="filterAttributes.timeRanges != null and filterAttributes.timeRanges.size > 0">
+            AND
+            <foreach item="timeRange" index="index" collection="filterAttributes.timeRanges" open="(" separator=" OR " close=")">
+                crimeTime &gt;= #{timeRange.startTime}
+                AND crimeTime &lt;= #{timeRange.endTime}
+            </foreach>
         </if>
         <if test="filterAttributes.crimeCodes != null and filterAttributes.crimeCodes.size > 0">
             AND crimeCode IN

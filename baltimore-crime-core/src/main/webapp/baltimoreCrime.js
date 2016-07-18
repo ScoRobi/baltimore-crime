@@ -47,8 +47,7 @@ var tooltip = d3.select("body").append("div")
 
 // Add topography data to queue
 queue()
-	.defer(d3.json, "https://raw.githubusercontent.com/ScoRobi/baltimore-crime/master/baltimore-crime-core/src/main/webapp/CSA_NSA_Tracts.topo.json") // Using GitHub file to avoid cross origin error
-	// .defer(d3.json, "CSA_NSA_Tracts.topo.json")
+	.defer(d3.json, "CSA_NSA_Tracts.topo.json")
 	// .defer(d3.csv, "test_baltimore.csv")	// For Local Testing: <uncomment>
 	.await(ready);
 
