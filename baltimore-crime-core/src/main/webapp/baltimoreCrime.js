@@ -1,5 +1,5 @@
 // Define the urls the the backend
-var base_url = 'http://localhost:8080/map';
+var base_url = 'http://localhost:8080/core/map';
 var data_url = base_url+'/data';
 
 // Define the width and height of the map
