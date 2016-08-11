@@ -2,6 +2,7 @@ package com.baltimorecrime.core.service;
 
 import com.baltimorecrime.core.dao.MapDao;
 import com.baltimorecrime.core.domain.CrimePoint;
+import com.baltimorecrime.core.domain.DataRanges;
 import com.baltimorecrime.core.domain.FilterAttributes;
 import com.baltimorecrime.core.utils.FilterAttributesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,14 @@ public class MapService {
 
     // Return only relevant CrimePoints
     return crimePoints;
+  }
+
+  /**
+   * Reads all data bounds based on the data.
+   * @return DataRanges
+   */
+  public DataRanges readDataRanges() {
+    return mapDao.readDataRanges();
   }
 
 }

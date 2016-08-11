@@ -157,15 +157,18 @@ function updateDetails(crime){
  */
 function getData(filter){
 	/**
-	 *  The following block uses the POST endpoint with a body instead of a GET endpoint with
-	 *  query parameters. This endpoint does not work when running locally.
+	 *  The following block uses the POST endpoint with a filter in the body to query the data.
 	 */
-	/*$.ajax({
+	$.ajax({
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
 		url: data_url,
 		type: 'POST',
 		crossDomain: true,
 		// dataType: "json",
-		data: filter == null ? "" : JSON.stringify(filter),
+		data: filter == null ? null : JSON.stringify(filter),
 		success: function (response) {
 			response.forEach(function(d){
 				d.weapon = resolveWeaponName(d.weapon);
@@ -175,27 +178,8 @@ function getData(filter){
 		error: function (response) {
 
 		}
-	})*/
-
-	/**
-	 *  The following block uses requests filtered data using a GET endpoint with query parameters.
-	 *  The filter is formatted into query parameters using `$.param` and an additional string
-	 *  replace to transform all "%3A" with a literal ":".
-	 */
-	$.ajaxSetup({ traditional: true });
-	$.ajax({
-		url: data_url,
-		type: 'GET',
-		crossDomain: true,
-		dataType: "json",
-		data: filter == null ? "" : $.param(filter).replace(/\%3A/g, ":"),
-		success: function (response) {
-			return populate(response);
-		},
-		error: function (response) {
-
-		}
 	})
+
 }
 
 /**
@@ -287,17 +271,29 @@ function buildFilter() {
 	var fNeighborhoods = isBlank($('#neighborhoods').val()) ? null : $('#neighborhoods').val().split(',').toString();
 	var fCrimeCodes = isBlank($('#crimecodes').val()) ? null : $('#crimecodes').val().split(',').toString();
 
-	// Collect Slider filters
-	var fStartDate = "2016-06-" + $( "#date-slider-range" ).slider( "values", 0 );
-	var fEndDate = "2016-06-" + $( "#date-slider-range" ).slider( "values", 1 );
-	var fStartLat = $( "#lat-slider-range" ).slider( "values", 0 );
-	var fEndLat = $( "#lat-slider-range" ).slider( "values", 1 );
-	var fStartLon = $( "#lon-slider-range" ).slider( "values", 0 );
-	var fEndLon = $( "#lon-slider-range" ).slider( "values", 1 );
+	// Collect Date Slider filter
+	var fDateRange = {
+		startDate: "2016-06-" + $( "#date-slider-range" ).slider( "values", 0 ),
+		endDate: "2016-06-" + $( "#date-slider-range" ).slider( "values", 1 )
+	};
 
-	// Collect Spinbox filters
-	var fStartTime = builtFilterForTime($( "#time-start-spinner" ));
-	var fEndTime = builtFilterForTime($( "#time-end-spinner" ));
+	// Collect Latitude Slider filter
+	var fLatRange = {
+		startLatitude: $( "#lat-slider-range" ).slider( "values", 0 ),
+		endLatitude: $( "#lat-slider-range" ).slider( "values", 1 )
+	};
+
+	// Collect Longitude Slider filter
+	var fLonRange = {
+		startLongitude: $( "#lon-slider-range" ).slider( "values", 0 ),
+		endLongitude: $( "#lon-slider-range" ).slider( "values", 1 )
+	};
+
+	// Collect Time Spinbox filters
+	var fTimeRange = {
+		startTime: builtFilterForTime($( "#time-start-spinner" )),
+		endTime: builtFilterForTime($( "#time-end-spinner" ))
+	};
 
 	// Declare filter skeleton
 	var filter = {
@@ -307,58 +303,42 @@ function buildFilter() {
 		posts: [],
 		neighborhoods: [],
 		crimeCodes: [],
-		startDate: [],
-		endDate: [],
-		startLatitude: [],
-		endLatitude: [],
-		startLongitude: [],
-		endLongitude: [],
-		startTime: [],
-		endTime: []
+		dateRanges: [],
+		latitudeRanges: [],
+		longitudeRanges: [],
+		timeRanges: []
 	};
 
 	// Build into JSON array
-	if (!isBlank(fDistricts)) {
+	if (!isEmpty(fDistricts)) {
 		filter.districts.push(fDistricts);
 	}
-	if (!isBlank(fWeapons)) {
+	if (!isEmpty(fWeapons)) {
 		filter.weapons.push(fWeapons);
 	}
-	if (!isBlank(fLocations)) {
+	if (!isEmpty(fLocations)) {
 		filter.locations.push(fLocations);
 	}
-	if (!isBlank(fPosts)) {
+	if (!isEmpty(fPosts)) {
 		filter.posts.push(fPosts);
 	}
-	if (!isBlank(fNeighborhoods)) {
+	if (!isEmpty(fNeighborhoods)) {
 		filter.neighborhoods.push(fNeighborhoods);
 	}
-	if (!isBlank(fCrimeCodes)) {
+	if (!isEmpty(fCrimeCodes)) {
 		filter.crimeCodes.push(fCrimeCodes);
 	}
-	if (!isBlank(fStartDate)) {
-		filter.startDate.push(fStartDate);
+	if (!isEmpty(fDateRange)) {
+		filter.dateRanges.push(fDateRange);
 	}
-	if (!isBlank(fEndDate)) {
-		filter.endDate.push(fEndDate);
+	if (!isEmpty(fLatRange)) {
+		filter.latitudeRanges.push(fLatRange);
 	}
-	if (!isBlank(fStartLat)) {
-		filter.startLatitude.push(fStartLat);
+	if (!isEmpty(fLonRange)) {
+		filter.longitudeRanges.push(fLonRange);
 	}
-	if (!isBlank(fEndLat)) {
-		filter.endLatitude.push(fEndLat);
-	}
-	if (!isBlank(fStartLon)) {
-		filter.startLongitude.push(fStartLon);
-	}
-	if (!isBlank(fEndLon)) {
-		filter.endLongitude.push(fEndLon);
-	}
-	if (!isBlank(fStartTime)) {
-		filter.startTime.push(fStartTime);
-	}
-	if (!isBlank(fEndTime)) {
-		filter.endTime.push(fEndTime);
+	if (!isEmpty(fTimeRange)) {
+		filter.timeRanges.push(fTimeRange);
 	}
 
 	// Return JSON array filter
@@ -466,5 +446,9 @@ function builtFilterForTime(timeString) {
 
 function isBlank(str) {
 	return (!str || /^\s*$/.test(str));
+}
+
+function isEmpty(array) {
+	return (array == null || array.size == 0) ? true : false;
 }
 

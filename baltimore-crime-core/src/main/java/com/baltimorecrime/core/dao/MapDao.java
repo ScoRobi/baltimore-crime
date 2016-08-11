@@ -1,6 +1,7 @@
 package com.baltimorecrime.core.dao;
 
 import com.baltimorecrime.core.domain.CrimePoint;
+import com.baltimorecrime.core.domain.DataRanges;
 import com.baltimorecrime.core.domain.FilterAttributes;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +43,14 @@ public class MapDao {
   public List<CrimePoint> readDataByDay(String crimeDate) {
     return this.sqlSession.selectList("selectByDay", crimeDate);
   }
+
+  /**
+   * Reads all data bounds based on the data.
+   * @return DataRanges
+   */
+  public DataRanges readDataRanges() {
+    return this.sqlSession.selectOne("getDataRanges");
+  }
+
 
 }

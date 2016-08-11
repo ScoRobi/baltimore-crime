@@ -1,6 +1,7 @@
 package com.baltimorecrime.core.mapper;
 
 import com.baltimorecrime.core.domain.CrimePoint;
+import com.baltimorecrime.core.domain.DataRanges;
 import com.baltimorecrime.core.domain.FilterAttributes;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +28,9 @@ public interface CrimePointMapper {
    * MyBatis stub to read all crime data within a provided filter. See CrimePointMapper.xml for SQL statement.
    */
   List<CrimePoint> selectWithFilter(@Param("filterAttributes") FilterAttributes filterAttributes);
+
+  /**
+   * MyBatis stub to read all crime data ranges. See CrimePointMapper.xml for SQL statement.
+   */
+  DataRanges getDataRanges();
 }

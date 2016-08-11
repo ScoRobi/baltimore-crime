@@ -1,6 +1,7 @@
 package com.baltimorecrime.core.resource;
 
 import com.baltimorecrime.core.domain.CrimePoint;
+import com.baltimorecrime.core.domain.DataRanges;
 import com.baltimorecrime.core.domain.FilterAttributes;
 import com.baltimorecrime.core.service.MapService;
 import com.baltimorecrime.core.utils.FilterAttributesUtil;
@@ -106,14 +107,25 @@ public class MapResource {
   }
 
   /**
+   * Reads all data bounds based on the data.
+   *
+   * @return Response
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/data/range")
+  public Response readDataRanges() {
+    return Response.ok(mapService.readDataRanges()).build();
+  }
+
+  /**
    * Ping endpoint used to ensure the service is available.
    *
-   * @return String
+   * @return Response
    */
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public Response ping() {
     return Response.ok("Ready for service!").build();
   }
-
 }

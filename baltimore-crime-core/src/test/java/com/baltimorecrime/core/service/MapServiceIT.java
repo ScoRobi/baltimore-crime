@@ -2,8 +2,11 @@ package com.baltimorecrime.core.service;
 
 import com.baltimorecrime.core.BaltimoreCrimeCoreApplication;
 import com.baltimorecrime.core.domain.CrimePoint;
+import com.baltimorecrime.core.domain.DateRange;
 import com.baltimorecrime.core.domain.District;
 import com.baltimorecrime.core.domain.FilterAttributes;
+import com.baltimorecrime.core.domain.LatitudeRange;
+import com.baltimorecrime.core.domain.LongitudeRange;
 import com.baltimorecrime.core.domain.TimeRange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,16 +45,18 @@ public class MapServiceIT {
   @Test
   public void testReadFilteredDataByCrimeDate() {
     FilterAttributes filterAttributes = new FilterAttributes();
-    filterAttributes.setStartDate(Date.valueOf("2016-06-10"));
-    filterAttributes.setEndDate(Date.valueOf("2016-06-18"));
+    DateRange dateRange = new DateRange();
+    dateRange.setStartDate(Date.valueOf("2016-06-10"));
+    dateRange.setEndDate(Date.valueOf("2016-06-18"));
+    filterAttributes.setDateRanges(Arrays.asList(dateRange));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
 
     assertNotNull(crimePoints);
     assertTrue(crimePoints.size() > 0);
 
     crimePoints.stream().forEach(crimePoint -> {
-      assertTrue(filterAttributes.getStartDate().compareTo(crimePoint.getCrimeDate()) <= 0);
-      assertTrue(filterAttributes.getEndDate().compareTo(crimePoint.getCrimeDate()) >= 0);
+      assertTrue(filterAttributes.getDateRanges().get(0).getStartDate().compareTo(crimePoint.getCrimeDate()) <= 0);
+      assertTrue(filterAttributes.getDateRanges().get(0).getEndDate().compareTo(crimePoint.getCrimeDate()) >= 0);
     });
   }
 
@@ -157,32 +162,36 @@ public class MapServiceIT {
   @Test
   public void testReadFilteredDataByLongitude() {
     FilterAttributes filterAttributes = new FilterAttributes();
-    filterAttributes.setStartLongitude(-76.75);
-    filterAttributes.setEndLongitude(-76.60);
+    LongitudeRange longitudeRange = new LongitudeRange();
+    longitudeRange.setStartLongitude(-76.75);
+    longitudeRange.setEndLongitude(-76.60);
+    filterAttributes.setLongitudeRanges(Arrays.asList(longitudeRange));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
 
     assertNotNull(crimePoints);
     assertTrue(crimePoints.size() > 0);
 
     crimePoints.stream().forEach(crimePoint -> {
-      assertTrue(filterAttributes.getStartLongitude().compareTo(crimePoint.getLongitude()) <= 0);
-      assertTrue(filterAttributes.getEndLongitude().compareTo(crimePoint.getLongitude()) >= 0);
+      assertTrue(filterAttributes.getLongitudeRanges().get(0).getStartLongitude().compareTo(crimePoint.getLongitude()) <= 0);
+      assertTrue(filterAttributes.getLongitudeRanges().get(0).getEndLongitude().compareTo(crimePoint.getLongitude()) >= 0);
     });
   }
 
   @Test
   public void testReadFilteredDataByLatitude() {
     FilterAttributes filterAttributes = new FilterAttributes();
-    filterAttributes.setStartLatitude(39.30);
-    filterAttributes.setEndLatitude(39.36);
+    LatitudeRange latitudeRange = new LatitudeRange();
+    latitudeRange.setStartLatitude(39.30);
+    latitudeRange.setEndLatitude(39.36);
+    filterAttributes.setLatitudeRanges(Arrays.asList(latitudeRange));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
 
     assertNotNull(crimePoints);
     assertTrue(crimePoints.size() > 0);
 
     crimePoints.stream().forEach(crimePoint -> {
-      assertTrue(filterAttributes.getStartLatitude().compareTo(crimePoint.getLatitude()) <= 0);
-      assertTrue(filterAttributes.getEndLatitude().compareTo(crimePoint.getLatitude()) >= 0);
+      assertTrue(filterAttributes.getLatitudeRanges().get(0).getStartLatitude().compareTo(crimePoint.getLatitude()) <= 0);
+      assertTrue(filterAttributes.getLatitudeRanges().get(0).getEndLatitude().compareTo(crimePoint.getLatitude()) >= 0);
     });
   }
 
@@ -192,10 +201,13 @@ public class MapServiceIT {
     timeRange.setStartTime(Time.valueOf("12:00:00"));
     timeRange.setEndTime(Time.valueOf("23:59:59"));
 
+    DateRange dateRange = new DateRange();
+    dateRange.setStartDate(Date.valueOf("2016-06-05"));
+    dateRange.setEndDate(Date.valueOf("2016-06-18"));
+
     FilterAttributes filterAttributes = new FilterAttributes();
     filterAttributes.setTimeRanges(Arrays.asList(timeRange));
-    filterAttributes.setStartDate(Date.valueOf("2016-06-05"));
-    filterAttributes.setEndDate(Date.valueOf("2016-06-18"));
+    filterAttributes.setDateRanges(Arrays.asList(dateRange));
     filterAttributes.setWeapons(Arrays.asList("FIREARM", "KNIFE"));
     filterAttributes.setNeighborhoods(Arrays.asList("Canton", "Fells Point"));
     List<CrimePoint> crimePoints = mapService.readFilteredData(filterAttributes);
@@ -204,8 +216,8 @@ public class MapServiceIT {
     assertTrue(crimePoints.size() > 0);
 
     crimePoints.stream().forEach(crimePoint -> {
-      assertTrue(filterAttributes.getStartDate().compareTo(crimePoint.getCrimeDate()) <= 0);
-      assertTrue(filterAttributes.getEndDate().compareTo(crimePoint.getCrimeDate()) >= 0);
+      assertTrue(filterAttributes.getDateRanges().get(0).getStartDate().compareTo(crimePoint.getCrimeDate()) <= 0);
+      assertTrue(filterAttributes.getDateRanges().get(0).getEndDate().compareTo(crimePoint.getCrimeDate()) >= 0);
       assertTrue(filterAttributes.getTimeRanges().get(0).getStartTime().compareTo(crimePoint.getCrimeTime()) <= 0);
       assertTrue(filterAttributes.getTimeRanges().get(0).getEndTime().compareTo(crimePoint.getCrimeTime()) >= 0);
       assertTrue(filterAttributes.getWeapons().contains(crimePoint.getWeapon()));

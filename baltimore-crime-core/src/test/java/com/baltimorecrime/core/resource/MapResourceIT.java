@@ -45,6 +45,16 @@ public class MapResourceIT {
   }
 
   @Test
+  public void testReadDataRanges() {
+    when().get("/map/data/range").then().statusCode(200).body(
+        equalTo("{\"minDate\":\"2016-06-01\",\"maxDate\":\"2016-06-18\"," +
+        "\"minTime\":\"00:00:00\",\"maxTime\":\"23:59:00\"," +
+        "\"minLongitude\":\"-76.7108600000000000\",\"maxLongitude\":\"-76.5213600000000000\"," +
+        "\"minLatitude\":\"39.2176300000000000\",\"maxLatitude\":\"41.5286100000000000\"," +
+        "\"crimeCount\":2399}"));
+  }
+
+  @Test
   public void testPing() {
     when().get("/map").then().statusCode(200).body(equalTo("Ready for service!"));
   }

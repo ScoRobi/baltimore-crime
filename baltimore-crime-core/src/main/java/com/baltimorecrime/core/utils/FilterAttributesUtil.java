@@ -1,7 +1,10 @@
 package com.baltimorecrime.core.utils;
 
+import com.baltimorecrime.core.domain.DateRange;
 import com.baltimorecrime.core.domain.District;
 import com.baltimorecrime.core.domain.FilterAttributes;
+import com.baltimorecrime.core.domain.LatitudeRange;
+import com.baltimorecrime.core.domain.LongitudeRange;
 import com.baltimorecrime.core.domain.TimeRange;
 import com.baltimorecrime.core.domain.Weapon;
 import com.mysql.jdbc.StringUtils;
@@ -80,23 +83,23 @@ public class FilterAttributesUtil {
       if(!StringUtils.isNullOrEmpty(filterCrimeCodes)) {
         filterAttributes.setCrimeCodes(Arrays.asList(filterCrimeCodes.split(",")));
       }
-      if(!StringUtils.isNullOrEmpty(filterStartDate)) {
-        filterAttributes.setStartDate(Date.valueOf(filterStartDate));
+      if(!StringUtils.isNullOrEmpty(filterStartDate) && !StringUtils.isNullOrEmpty(filterEndDate)) {
+        DateRange dateRange = new DateRange();
+        dateRange.setStartDate(Date.valueOf(filterStartDate));
+        dateRange.setEndDate(Date.valueOf(filterEndDate));
+        filterAttributes.setDateRanges(Arrays.asList(dateRange));
       }
-      if(!StringUtils.isNullOrEmpty(filterEndDate)) {
-        filterAttributes.setEndDate(Date.valueOf(filterEndDate));
+      if(!StringUtils.isNullOrEmpty(filterStartLatitude) && !StringUtils.isNullOrEmpty(filterEndLatitude)) {
+        LatitudeRange latitudeRange = new LatitudeRange();
+        latitudeRange.setStartLatitude(Double.valueOf(filterStartLatitude));
+        latitudeRange.setEndLatitude(Double.valueOf(filterEndLatitude));
+        filterAttributes.setLatitudeRanges(Arrays.asList(latitudeRange));
       }
-      if(!StringUtils.isNullOrEmpty(filterStartLatitude)) {
-        filterAttributes.setStartLatitude(Double.valueOf(filterStartLatitude));
-      }
-      if(!StringUtils.isNullOrEmpty(filterEndLatitude)) {
-        filterAttributes.setEndLatitude(Double.valueOf(filterEndLatitude));
-      }
-      if(!StringUtils.isNullOrEmpty(filterStartLongitude)) {
-        filterAttributes.setStartLongitude(Double.valueOf(filterStartLongitude));
-      }
-      if(!StringUtils.isNullOrEmpty(filterEndLongitude)) {
-        filterAttributes.setEndLongitude(Double.valueOf(filterEndLongitude));
+      if(!StringUtils.isNullOrEmpty(filterStartLongitude) && !StringUtils.isNullOrEmpty(filterEndLongitude)) {
+        LongitudeRange longitudeRange = new LongitudeRange();
+        longitudeRange.setStartLongitude(Double.valueOf(filterStartLongitude));
+        longitudeRange.setEndLongitude(Double.valueOf(filterEndLongitude));
+        filterAttributes.setLongitudeRanges(Arrays.asList(longitudeRange));
       }
       if(!StringUtils.isNullOrEmpty(filterStartTime) && !StringUtils.isNullOrEmpty(filterEndTime)) {
         filterAttributes.setTimeRanges(buildTimeRange(Time.valueOf(filterStartTime), Time.valueOf(filterEndTime)));

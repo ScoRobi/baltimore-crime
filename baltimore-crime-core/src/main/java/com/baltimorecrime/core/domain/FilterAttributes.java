@@ -13,9 +13,7 @@ import java.util.List;
 @Getter @Setter
 public class FilterAttributes {
 
-  Date startDate;
-  Date endDate;
-
+  List<DateRange> dateRanges;
   List<TimeRange> timeRanges;
 
   List<String> crimeCodes;
@@ -25,11 +23,8 @@ public class FilterAttributes {
   List<String> districts;
   List<String> neighborhoods;
 
-  Double startLongitude;
-  Double endLongitude;
-
-  Double startLatitude;
-  Double endLatitude;
+  List<LatitudeRange> latitudeRanges;
+  List<LongitudeRange> longitudeRanges;
 
   // Note: Workaround to allow MyBatis mapping
   public FilterAttributes getFilterAttributes() { return this; }

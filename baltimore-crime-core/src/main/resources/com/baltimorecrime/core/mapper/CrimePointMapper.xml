@@ -18,6 +18,18 @@
         <result property="latitude" column="lat"/>
     </resultMap>
 
+    <resultMap id="dataRanges" type="com.baltimorecrime.core.domain.DataRanges">
+        <result property="minDate" column="minDate"/>
+        <result property="maxDate" column="maxDate"/>
+        <result property="minTime" column="minTime"/>
+        <result property="maxTime" column="maxTime"/>
+        <result property="minLongitude" column="minLongitude"/>
+        <result property="maxLongitude" column="maxLongitude"/>
+        <result property="minLatitude" column="minLatitude"/>
+        <result property="maxLatitude" column="maxLatitude"/>
+        <result property="crimeCount" column="crimeCount"/>
+    </resultMap>
+
     <select id="selectAll" resultMap="result">
         SELECT * FROM baltimore_crime.crime;
     </select>
@@ -29,9 +41,12 @@
     <select id="selectWithFilter" parameterType="com.baltimorecrime.core.domain.FilterAttributes" resultMap="result">
         SELECT * FROM baltimore_crime.crime
         WHERE id IS NOT NULL
-        <if test="filterAttributes.startDate != null and filterAttributes.endDate != null">
-            AND crimeDate &gt;= #{filterAttributes.startDate}
-            AND crimeDate &lt;= #{filterAttributes.endDate}
+        <if test="filterAttributes.dateRanges != null and filterAttributes.dateRanges.size > 0">
+            AND
+            <foreach item="dateRange" index="index" collection="filterAttributes.dateRanges" open="(" separator=" OR " close=")">
+              crimeDate &gt;= #{dateRange.startDate}
+              AND crimeDate &lt;= #{dateRange.endDate}
+            </foreach>
         </if>
         <if test="filterAttributes.timeRanges != null and filterAttributes.timeRanges.size > 0">
             AND
@@ -76,14 +91,34 @@
                 #{neighborhood}
             </foreach>
         </if>
-        <if test="filterAttributes.startLongitude != null and filterAttributes.endLongitude != null">
-            AND lon &gt;= #{filterAttributes.startLongitude}
-            AND lon &lt;= #{filterAttributes.endLongitude}
+        <if test="filterAttributes.longitudeRanges != null and filterAttributes.longitudeRanges.size > 0">
+            AND
+            <foreach item="longitudeRange" index="index" collection="filterAttributes.longitudeRanges" open="(" separator=" OR " close=")">
+                lon &gt;= #{longitudeRange.startLongitude}
+                AND lon &lt;= #{longitudeRange.endLongitude}
+            </foreach>
         </if>
-        <if test="filterAttributes.startLatitude != null and filterAttributes.endLatitude != null">
-            AND lat &gt;= #{filterAttributes.startLatitude}
-            AND lat &lt;= #{filterAttributes.endLatitude}
+        <if test="filterAttributes.latitudeRanges != null and filterAttributes.latitudeRanges.size > 0">
+            AND
+            <foreach item="latitudeRange" index="index" collection="filterAttributes.latitudeRanges" open="(" separator=" OR " close=")">
+                lat &gt;= #{latitudeRange.startLatitude}
+                AND lat &lt;= #{latitudeRange.endLatitude}
+            </foreach>
         </if>
+    </select>
+
+    <select id="getDataRanges" resultMap="dataRanges">
+      SELECT
+        MIN(crimeDate) as minDate,
+        MAX(crimeDate) as maxDate,
+        MIN(crimeTime) as minTime,
+        MAX(crimeTIme) as maxTime,
+        MIN(lat) as minLatitude,
+        MAX(lat) as maxLatitude,
+        MIN(lon) as minLongitude,
+        MAX(lon) as maxLongitude,
+        COUNT(*) as crimeCount
+      FROM baltimore_crime.crime
     </select>
 
 </mapper>
