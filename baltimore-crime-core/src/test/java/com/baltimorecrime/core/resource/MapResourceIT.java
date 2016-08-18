@@ -46,7 +46,7 @@ public class MapResourceIT {
 
   @Test
   public void testReadDataRanges() {
-    when().get("/map/data/range").then().statusCode(200).body(
+    when().get("/map/data/bounds").then().statusCode(200).body(
         equalTo("{\"minDate\":\"2016-06-01\",\"maxDate\":\"2016-06-18\"," +
         "\"minTime\":\"00:00:00\",\"maxTime\":\"23:59:00\"," +
         "\"minLongitude\":\"-76.7108600000000000\",\"maxLongitude\":\"-76.5213600000000000\"," +
