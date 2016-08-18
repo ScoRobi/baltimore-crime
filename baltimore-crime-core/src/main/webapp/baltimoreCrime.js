@@ -3,6 +3,9 @@ var base_url = 'http://localhost:8080/core/map';
 var data_url = base_url+'/data';
 var bounds_url = data_url+'/bounds';
 
+// Define state variable to prevent multiple reads triggered during filter reset
+var isResetting = false;
+
 // Define the width and height of the map
 var width = 1000,
 	height = 500;
@@ -49,7 +52,7 @@ var tooltip = d3.select("body").append("div")
 // Add topography data to queue
 queue()
 	.defer(d3.json, "CSA_NSA_Tracts.topo.json")
-	// .defer(d3.csv, "test_baltimore.csv")	// For Local Testing: <uncomment>
+	// .defer(d3.csv, "test_baltimore.csv")	// For Testing: <uncomment>
 	.await(ready);
 
 /**
@@ -73,8 +76,13 @@ function ready(error, topology) {   // For Local Testing: (error, topology, csv)
 	readDataBounds();
 
 	// Apply filter when the apply button is clicked
-	$("#apply-button").click(function(){
-		getData(buildFilter());
+	// $("#apply-button").click(function(){
+	// 	getData(buildFilter());
+	// });
+
+	// Center map when center button clicked
+	$("#center-map-button").click(function() {
+		zoom();
 	});
 
 	// Reset filter when the reset button is clicked
@@ -82,6 +90,8 @@ function ready(error, topology) {   // For Local Testing: (error, topology, csv)
 		clearFilter();
 	});
 
+	// Setup all filtering triggers to update map as filters are being created
+	setupTriggers();
 }
 
 /**
@@ -134,6 +144,7 @@ function populate(crimes) {
 var printDetails = [
 	{'var': 'district', 'print': 'District'},
 	{'var': 'neighborhood', 'print': 'Neighborhood'},
+	{'var': 'post', 'print': 'Post'},
 	{'var': 'crimeCode', 'print': 'Crime Code'},
 	{'var': 'weapon', 'print': 'Weapon'},
 	{'var': 'crimeDate', 'print': 'Date'},
@@ -160,6 +171,11 @@ function updateDetails(crime){
  *  Used to get data from the backend via a REST endpoint.
  */
 function getData(filter){
+	/**
+	 * The reset flag is used to prevent multiple reads during a filter reset.
+	 */
+	if (isResetting == true) { return; }
+
 	/**
 	 *  The following block uses the POST endpoint with a filter in the body to query the data.
 	 */
@@ -222,9 +238,13 @@ function resolveWeaponName(weapon){
  */
 function clearFilter() {
 
+	// Set resetting flag
+	isResetting = true;
+
 	// Reset District checkboxes
 	$('#checkbox-central').prop("checked", true);
 	$('#checkbox-eastern').prop("checked", true);
+	$('#checkbox-northeastern').prop("checked", true);
 	$('#checkbox-northern').prop("checked", true);
 	$('#checkbox-northwestern').prop("checked", true);
 	$('#checkbox-southeastern').prop("checked", true);
@@ -237,6 +257,7 @@ function clearFilter() {
 	$('#checkbox-knife').prop("checked", true);
 	$('#checkbox-firearm').prop("checked", true);
 	$('#checkbox-other').prop("checked", true);
+	$('#checkbox-unknown').prop("checked", true);
 
 	// Reset CSV filters
 	$('#locations').val("");
@@ -256,6 +277,9 @@ function clearFilter() {
 	$( "#time-start-spinner" ).val("12:00 AM");
 	$( "#time-end-spinner" ).val("11:59 PM");
 
+	// Clear resetting flag
+	isResetting = false;
+
 	return getData(null);
 }
 
@@ -269,10 +293,10 @@ function buildFilter() {
 	var fWeapons = buildFilterForWeapons();
 
 	// Collect CSV filters
-	var fLocations = isBlank($('#locations').val()) ? null : $('#locations').val().split(',').toString();
-	var fPosts = isBlank($('#posts').val()) ? null : $('#posts').val().split(',').toString();
-	var fNeighborhoods = isBlank($('#neighborhoods').val()) ? null : $('#neighborhoods').val().split(',').toString();
-	var fCrimeCodes = isBlank($('#crimecodes').val()) ? null : $('#crimecodes').val().split(',').toString();
+	var fLocations = isBlank($('#locations').val()) ? null : $('#locations').val().split(',');
+	var fPosts = isBlank($('#posts').val()) ? null : $('#posts').val().replace(" ","").split(',');
+	var fNeighborhoods = isBlank($('#neighborhoods').val()) ? null : $('#neighborhoods').val().split(',');
+	var fCrimeCodes = isBlank($('#crimecodes').val()) ? null : $('#crimecodes').val().replace(" ","").split(',');
 
 	// Collect Date Slider filter
 	var fDateRange = {
@@ -314,22 +338,22 @@ function buildFilter() {
 
 	// Build into JSON array
 	if (!isEmpty(fDistricts)) {
-		filter.districts.push(fDistricts);
+		filter.districts = fDistricts;
 	}
 	if (!isEmpty(fWeapons)) {
-		filter.weapons.push(fWeapons);
+		filter.weapons = fWeapons;
 	}
 	if (!isEmpty(fLocations)) {
-		filter.locations.push(fLocations);
+		filter.locations = fLocations;
 	}
 	if (!isEmpty(fPosts)) {
-		filter.posts.push(fPosts);
+		filter.posts = fPosts;
 	}
 	if (!isEmpty(fNeighborhoods)) {
-		filter.neighborhoods.push(fNeighborhoods);
+		filter.neighborhoods = fNeighborhoods;
 	}
 	if (!isEmpty(fCrimeCodes)) {
-		filter.crimeCodes.push(fCrimeCodes);
+		filter.crimeCodes = fCrimeCodes;
 	}
 	if (!isEmpty(fDateRange)) {
 		filter.dateRanges.push(fDateRange);
@@ -389,7 +413,7 @@ function buildFilterForDistricts() {
 	}
 
 	// Return selected items
-	return fdistricts.toString();
+	return fdistricts;
 }
 
 /**
@@ -421,7 +445,7 @@ function buildFilterForWeapons() {
 	}
 
 	// Return selected items
-	return fweapons.toString();
+	return fweapons;
 }
 
 /**
@@ -447,6 +471,9 @@ function builtFilterForTime(timeString) {
 	return hour + ":" + minute + ":" + second;
 }
 
+/**
+ * Reads the filter bounds based on the available data.
+ */
 function readDataBounds() {
 	/**
 	 *  The following block uses a GET endpoint to read the data bounds.
@@ -492,6 +519,79 @@ function readDataBounds() {
 
 		}
 	})
+}
+
+/**
+ * Setup triggers for filters.
+ */
+function setupTriggers() {
+	// Trigger on District checkboxes
+	$('#checkbox-central').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-eastern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-northeastern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-northern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-northwestern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-southeastern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-southern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-southwestern').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-western').change(function() {
+		getData(buildFilter());
+	});
+
+	// Trigger on Weapon checkboxes
+	$('#checkbox-hands').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-knife').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-firearm').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-other').change(function() {
+		getData(buildFilter());
+	});
+	$('#checkbox-unknown').change(function() {
+		getData(buildFilter());
+	});
+
+	// Trigger on Time spinners
+	$("#time-start-spinner").focusout(function() {
+		getData(buildFilter());
+	});
+	$("#time-end-spinner").focusout(function() {
+		getData(buildFilter());
+	});
+
+	// Trigger on Text Filters
+	$('#locations').focusout(function() {
+		getData(buildFilter());
+	});
+	$('#posts').focusout(function() {
+		getData(buildFilter());
+	});
+	$('#neighborhoods').focusout(function() {
+		getData(buildFilter());
+	});
+	$('#crimecodes').focusout(function() {
+		getData(buildFilter());
+	});
 }
 
 function isBlank(str) {

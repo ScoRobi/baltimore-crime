@@ -3,6 +3,10 @@
  */
 
 $( function() {
+
+    /**
+     * Date Slider
+     */
     $( "#date-slider-range" ).slider({
         range: true,
         min: 1,
@@ -11,28 +15,17 @@ $( function() {
         step: 1,
         slide: function( event, ui ) {
             $( "#date-range" ).val( "June " + ui.values[ 0 ] + " - June " + ui.values[ 1 ] );
+        },
+        change: function() {
+            getData(buildFilter());
         }
     });
     $( "#date-range" ).val( "June " + $( "#date-slider-range" ).slider( "values", 0 ) +
         " - June " + $( "#date-slider-range" ).slider( "values", 1 ) );
-} );
 
-// $( function() {
-//     $( "#time-slider-range" ).slider({
-//         range: true,
-//         min: 0,
-//         max: 23.9999,
-//         values: [ 0, 23.999 ],
-//         step: 1,
-//         slide: function( event, ui ) {
-//             $( "#time-range" ).val(ui.values[ 0 ] + "H - " + ui.values[ 1 ] +"H" );
-//         }
-//     });
-//     $( "#time-range" ).val($( "#time-slider-range" ).slider( "values", 0 ) +
-//         "H - " + $( "#time-slider-range" ) + "H".slider( "values", 1 ) );
-// } );
-
-$( function() {
+    /**
+     * Latitude Slider
+     */
     $( "#lat-slider-range" ).slider({
         range: true,
         min: 39.21,
@@ -41,13 +34,17 @@ $( function() {
         step: 0.005,
         slide: function( event, ui ) {
             $( "#lat-range" ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+        },
+        change: function() {
+            getData(buildFilter());
         }
     });
     $( "#lat-range" ).val($( "#lat-slider-range" ).slider( "values", 0 ) +
         " - " + $( "#lat-slider-range" ).slider( "values", 1 ) );
-} );
 
-$( function() {
+    /**
+     * Longitude Slider
+     */
     $( "#lon-slider-range" ).slider({
         range: true,
         min: -76.720,
@@ -56,8 +53,12 @@ $( function() {
         step: 0.005,
         slide: function( event, ui ) {
             $( "#lon-range" ).val("(" + ui.values[ 0 ] + ") - (" + ui.values[ 1 ] + ")");
+        },
+        change: function() {
+            getData(buildFilter());
         }
     });
     $( "#lon-range" ).val("(" + $( "#lon-slider-range" ).slider( "values", 0 ) +
         ") - (" + $( "#lon-slider-range").slider( "values", 1 ) + ")");
-} );
+
+});

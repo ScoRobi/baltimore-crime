@@ -1,8 +1,9 @@
-/**
- * Created by Scott Robinson on 7/11/16.
- */
 
 $( function() {
+
+    /**
+     * Time Start Spinner
+     */
     $.widget( "ui.timespinner", $.ui.spinner, {
         options: {
             // seconds
@@ -33,11 +34,13 @@ $( function() {
         var current = $( "#time-start-spinner" ).timespinner( "value" );
         Globalize.culture( $(this).val() );
         $( "#time-start-spinner" ).timespinner( "value", current );
+        getData(buildFilter());
+
     });
-} );
 
-
-$( function() {
+    /**
+     * Time End Spinner
+     */
     $.widget( "ui.timespinner", $.ui.spinner, {
         options: {
             // seconds
@@ -69,5 +72,6 @@ $( function() {
         Globalize.culture( $(this).val() );
         $( "#time-end-spinner" ).timespinner( "value", current );
     });
+
 } );
 

@@ -13,18 +13,13 @@
 
 	<div id="charts">
 		<div id="map" class="display"></div>
+		<button class="ui-button ui-widget ui-corner-all" id="center-map-button" style="float: right;">Center Map</button>
 
 		<!--TODO: Add Pie chart of assault weapons for given scope-->
 	</div>
 
 	<div>
 		<h1>Filters</h1>
-		<i>(Note: Text boxes accept comma separated parameters. No entry will result in no filter for given parameter.)</i>
-
-		<p>
-			<button class="ui-button ui-widget ui-corner-all" id="apply-button">Apply Filters</button>
-			<button class="ui-button ui-widget ui-corner-all" id="clear-button">Clear Filters</button>
-		</p>
 
 		<p>
 			<label for="date-range">Date Range:</label>
@@ -96,10 +91,19 @@
 		<div id="lon-slider-range"></div>
 
 		<p>
+			<i>(Note: Text boxes accept comma separated parameters. No entry will result in no filter for given parameter.)</i>
+		</p>
+
+		<p>
 			<label for="locations">Locations: </label><input type='textbox' id="locations">
 			<label for="posts">Posts: </label><input type='textbox' id="posts">
 			<label for="neighborhoods">Neighborhoods: </label><input type='textbox' id="neighborhoods">
 			<label for="crimecodes">CrimeCodes: </label><input type='textbox' id="crimecodes">
+		</p>
+
+		<p>
+			<!--<button class="ui-button ui-widget ui-corner-all" id="apply-button">Apply Filters</button>-->
+			<button class="ui-button ui-widget ui-corner-all" id="clear-button">Reset All Filters</button>
 		</p>
 
 	</div>
