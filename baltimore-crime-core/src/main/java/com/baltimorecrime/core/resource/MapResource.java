@@ -1,7 +1,6 @@
 package com.baltimorecrime.core.resource;
 
 import com.baltimorecrime.core.domain.CrimePoint;
-import com.baltimorecrime.core.domain.DataRanges;
 import com.baltimorecrime.core.domain.FilterAttributes;
 import com.baltimorecrime.core.service.MapService;
 import com.baltimorecrime.core.utils.FilterAttributesUtil;
@@ -113,7 +112,7 @@ public class MapResource {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/data/range")
+  @Path("/data/bounds")
   public Response readDataRanges() {
     return Response.ok(mapService.readDataRanges()).build();
   }

@@ -1,6 +1,7 @@
 // Define the urls the the backend
 var base_url = 'http://localhost:8080/core/map';
 var data_url = base_url+'/data';
+var bounds_url = data_url+'/bounds';
 
 // Define the width and height of the map
 var width = 1000,
@@ -67,6 +68,9 @@ function ready(error, topology) {   // For Local Testing: (error, topology, csv)
 
 	// Read data from backend
 	rawCrimes = getData(null); 	// For Local Testing: rawCrimes = csv;
+
+	// Read and set data bounds
+	readDataBounds();
 
 	// Apply filter when the apply button is clicked
 	$("#apply-button").click(function(){
@@ -179,7 +183,6 @@ function getData(filter){
 
 		}
 	})
-
 }
 
 /**
@@ -442,6 +445,53 @@ function builtFilterForTime(timeString) {
 	}
 
 	return hour + ":" + minute + ":" + second;
+}
+
+function readDataBounds() {
+	/**
+	 *  The following block uses a GET endpoint to read the data bounds.
+	 */
+	$.ajax({
+		headers: {
+			'Accept': 'application/json',
+		},
+		url: bounds_url,
+		type: 'GET',
+		crossDomain: true,
+		success: function (response) {
+
+			// Set Slider Bounds
+			$( "#date-slider-range" ).slider("option", "min", parseInt(response.minDate.split("-")[2]));
+			$( "#date-slider-range" ).slider("option", "max", parseInt(response.maxDate.split("-")[2]));
+			$( "#date-slider-range" ).slider("values", 0, parseInt(response.minDate.split("-")[2]));
+			$( "#date-slider-range" ).slider("values", 1, parseInt(response.maxDate.split("-")[2]));
+			$( "#date-range" ).val( "June " + $( "#date-slider-range" ).slider( "values", 0 ) +
+				" - June " + $( "#date-slider-range" ).slider( "values", 1 ) );
+
+			var minLat = parseFloat(response.minLatitude.substr(0, 6));
+			var maxLat = parseFloat(response.maxLatitude.substr(0, 6)) + 0.001;
+			$( "#lat-slider-range" ).slider("option", "min", minLat);
+			$( "#lat-slider-range" ).slider("option", "max", maxLat);
+			$( "#lat-slider-range" ).slider("values", 0, minLat);
+			$( "#lat-slider-range" ).slider("values", 1, maxLat);
+			$( "#lat-range" ).val($( "#lat-slider-range" ).slider( "values", 0 ) +
+				" - " + $( "#lat-slider-range" ).slider( "values", 1 ) );
+
+			var minLon = parseFloat(response.minLongitude.substr(0, 7));
+			var maxLon = parseFloat(response.maxLongitude.substr(0, 7)) + 0.001;
+			$( "#lon-slider-range" ).slider("option", "min", minLon);
+			$( "#lon-slider-range" ).slider("option", "max", maxLon);
+			$( "#lon-slider-range" ).slider("values", 0, minLon);
+			$( "#lon-slider-range" ).slider("values", 1, maxLon);
+			$( "#lon-range" ).val("(" + $( "#lon-slider-range" ).slider( "values", 0 ) +
+				") - (" + $( "#lon-slider-range").slider( "values", 1 ) + ")");
+
+			return;
+		},
+		error: function (response) {
+
+		}
+	})
 }
 
 function isBlank(str) {
